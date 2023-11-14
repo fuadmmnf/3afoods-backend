@@ -29,7 +29,6 @@ return new class extends Migration
 
             // Foreign key relationships with cascade options
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
-//            $table->foreign('payment_id')->references('id')->on('payments')->onUpdate('cascade');
         });
     }
 
