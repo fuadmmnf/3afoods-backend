@@ -11,13 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payments', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->float('amount');
-            $table->string('provider');
-            $table->string('status');
-            $table->timestamps();
+        Schema::table('orders', function (Blueprint $table) {
+
+            // Add the foreign key constraint
+            $table->foreign('payment_id')
+                ->references('id')
+                ->on('payments')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
         });
     }
 
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payments');
+        //
     }
 };
