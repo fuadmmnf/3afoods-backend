@@ -24,6 +24,7 @@ use App\Http\Controllers\ProductController;
 //});
 
 
+
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [UserController::class, 'logout']);
@@ -42,7 +43,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 });
 
 
-Route::prefix('categories')->middleware('auth:sanctum')->group(function () {
+Route::prefix('categories')->group(function () {
     Route::post('/', [CategoryController::class, 'store']); // Add Category
     Route::get('/', [CategoryController::class, 'index']); // Read All Categories
     Route::get('/{categoryID}', [CategoryController::class, 'show']); // Read Single Category
@@ -50,13 +51,12 @@ Route::prefix('categories')->middleware('auth:sanctum')->group(function () {
     Route::delete('/{categoryID}', [CategoryController::class, 'destroy']); // Delete Category
 });
 
-
-Route::prefix('products')->middleware('auth:sanctum')->group(function () {
+Route::prefix('products')->group(function () {
     Route::post('/', [ProductController::class, 'store']); // Add Product
     Route::get('/', [ProductController::class, 'index']); // Read All Products
-    Route::get('/{productID}', [ProductController::class, 'show']); // Read Single Product
-    Route::put('/{productID}', [ProductController::class, 'update']); // Update Product
-    Route::delete('/{productID}', [ProductController::class, 'destroy']); // Delete Product
+    Route::get('/{product_id}', [ProductController::class, 'show']); // Read Single Product
+    Route::put('/{product_id}', [ProductController::class, 'update']); // Update Product
+    Route::delete('/{product_id}', [ProductController::class, 'destroy']); // Delete Product
     Route::get('/type/{type}', [ProductController::class, 'getProductsByType']); // Read All Products by Type
 });
 
