@@ -76,7 +76,6 @@ class ProductController extends Controller
             if (!in_array($type, ['retail', 'wholesale'])) {
                 return ResponseHelper::error('Invalid product type', 400);
             }
-
             $products = Product::where('type', $type)->get();
             return ResponseHelper::success(['products' => $products], 'Products retrieved successfully', 200);
         } catch (\Exception $e) {
@@ -94,8 +93,6 @@ class ProductController extends Controller
             if (!$product) {
                 return ResponseHelper::error('Product not found', 404);
             }
-
-            $product->delete();
 
             return ResponseHelper::success([], 'Product deleted successfully', 200);
         } catch (\Exception $e) {
