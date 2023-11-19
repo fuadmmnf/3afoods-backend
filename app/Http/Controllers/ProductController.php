@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ImageHandler;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -15,7 +17,7 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            $products = Product::all();
+            $products = Product::with(['category:category_name'])->get();
             return ResponseHelper::success($products, 'Products retrieved successfully', 200);
         } catch (\Exception $e) {
             return ResponseHelper::error('Failed to retrieve products', 500);
@@ -27,7 +29,11 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
+        // Save the product with the generated image path
         $validatedData = $request->validated();
+        // Validate and upload the image
+        $imagePath = ImageHandler::upload($request->file('img'), 'product_img', 2048, ['jpg', 'jpeg', 'png', 'gif']);
+        $validatedData['img'] = $imagePath ;
         $product = Product::create($validatedData);
         return ResponseHelper::success($product, 'Product created successfully', 201);
     }
@@ -39,7 +45,7 @@ class ProductController extends Controller
     public function show(string $id)
     {
         try {
-            $product = Product::find($id);
+            $product = Product::with(['category:category_name'])->find($id);
             if (!$product) {
                 return ResponseHelper::error('Product not found', 404);
             }
@@ -76,7 +82,7 @@ class ProductController extends Controller
             if (!in_array($type, ['retail', 'wholesale'])) {
                 return ResponseHelper::error('Invalid product type', 400);
             }
-            $products = Product::where('type', $type)->get();
+            $products = Product::with(['category:category_name'])->where('type', $type)->get();
             return ResponseHelper::success(['products' => $products], 'Products retrieved successfully', 200);
         } catch (\Exception $e) {
             return ResponseHelper::error('Failed to retrieve products', 500, $e->getMessage());

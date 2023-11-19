@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -39,18 +40,41 @@ class CategoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $category_id)
     {
-        //
+        try {
+            // Find the category by ID
+            $category = Category::find($category_id);
+
+            // Check if the category exists
+            if (!$category) {
+                return ResponseHelper::error("Category with ID $category_id not found", 404);
+            }
+
+            return ResponseHelper::success($category, 'Category retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to retrieve category', 500, $e->getMessage());
+        }
     }
+
 
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CategoryRequest $request, string $id)
     {
-        //
+        try {
+            $category = Category::find($id);
+            if (!$category) {
+                return ResponseHelper::error('Category not found', 404);
+            }
+            $validatedData = $request->validated();
+            $category->update($validatedData);
+            return ResponseHelper::success($category, 'Category updated successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to update Category', 500, $e->getMessage());
+        }
     }
 
     /**
@@ -58,6 +82,22 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            // Find the category by ID
+            $category = Category::find($id);
+
+            // Check if the category exists
+            if (!$category) {
+                return ResponseHelper::error("Category with ID $id not found", 404);
+            }
+
+            // Delete the category
+            $category->delete();
+
+            return ResponseHelper::success([], 'Category deleted successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to delete category', 500, $e->getMessage());
+        }
     }
+
 }

@@ -26,7 +26,7 @@ class ProductRequest extends FormRequest
             'title' => 'required|string',
             'desc' => 'required|string',
             'type' => 'required|in:retail,wholesale',
-            'img' => 'required|string', // You may need to handle file uploads appropriately
+            'img' => 'required|file|mimes:jpeg,png,jpg,gif|max:2048', // Example: Max size is 2MB and allowed types are jpeg, png, jpg, gif
             'price' => 'nullable|numeric',
             'unit' => 'required|string',
         ];

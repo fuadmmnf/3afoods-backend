@@ -46,9 +46,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::prefix('categories')->group(function () {
     Route::post('/', [CategoryController::class, 'store']); // Add Category
     Route::get('/', [CategoryController::class, 'index']); // Read All Categories
-    Route::get('/{categoryID}', [CategoryController::class, 'show']); // Read Single Category
-    Route::put('/{categoryID}', [CategoryController::class, 'update']); // Update Category
-    Route::delete('/{categoryID}', [CategoryController::class, 'destroy']); // Delete Category
+    Route::get('/{category_id}', [CategoryController::class, 'show']); // Read Single Category
+    Route::put('/{category_id}', [CategoryController::class, 'update']); // Update Category
+    Route::delete('/{category_id}', [CategoryController::class, 'destroy']); // Delete Category
 });
 
 Route::prefix('products')->group(function () {
