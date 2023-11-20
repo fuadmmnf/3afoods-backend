@@ -6,8 +6,6 @@ use App\Helpers\ImageHandler;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\ProductRequest;
 use App\Models\Product;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -17,7 +15,7 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            $products = Product::with(['category:category_name'])->get();
+            $products = Product::with(['category:id,category_name'])->get();
             return ResponseHelper::success($products, 'Products retrieved successfully', 200);
         } catch (\Exception $e) {
             return ResponseHelper::error('Failed to retrieve products', 500);
@@ -45,11 +43,11 @@ class ProductController extends Controller
     public function show(string $id)
     {
         try {
-            $product = Product::with(['category:category_name'])->find($id);
+            $product = Product::with(['category:id,category_name'])->find($id);
             if (!$product) {
                 return ResponseHelper::error('Product not found', 404);
             }
-            return ResponseHelper::success(['product' => $product], 'Product retrieved successfully', 200);
+            return ResponseHelper::success($product, 'Product retrieved successfully', 200);
         } catch (\Exception $e) {
             return ResponseHelper::error('Failed to retrieve product', 500, $e->getMessage());
         }
@@ -61,6 +59,7 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, string $id)
     {
+
         try {
             $product = Product::find($id);
 
@@ -68,8 +67,20 @@ class ProductController extends Controller
                 return ResponseHelper::error('Product not found', 404);
             }
 
-            $validatedData = $request->validated();
+            // Check if a new image is provided
+            if ($request->hasFile('img')) {
+                $imagePath = ImageHandler::upload($request->file('img'), 'product_img', 2048, ['jpg', 'jpeg', 'png', 'gif']);
+                $validatedData = $request->validated();
+                $validatedData['img'] = $imagePath;
+            } else {
+                // If no new image is provided, only update other fields
+                $validatedData = $request->validated();
+                unset($validatedData['img']); // Exclude img from validation data
+            }
+
+            // Update the product
             $product->update($validatedData);
+
             return ResponseHelper::success($product, 'Product updated successfully', 200);
         } catch (\Exception $e) {
             return ResponseHelper::error('Failed to update product', 500, $e->getMessage());
@@ -82,8 +93,8 @@ class ProductController extends Controller
             if (!in_array($type, ['retail', 'wholesale'])) {
                 return ResponseHelper::error('Invalid product type', 400);
             }
-            $products = Product::with(['category:category_name'])->where('type', $type)->get();
-            return ResponseHelper::success(['products' => $products], 'Products retrieved successfully', 200);
+            $products = Product::with(['category:id,category_name'])->where('type', $type)->get();
+            return ResponseHelper::success($products, 'Products retrieved successfully', 200);
         } catch (\Exception $e) {
             return ResponseHelper::error('Failed to retrieve products', 500, $e->getMessage());
         }

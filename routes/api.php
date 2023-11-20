@@ -55,19 +55,21 @@ Route::prefix('products')->group(function () {
     Route::post('/', [ProductController::class, 'store']); // Add Product
     Route::get('/', [ProductController::class, 'index']); // Read All Products
     Route::get('/{product_id}', [ProductController::class, 'show']); // Read Single Product
-    Route::put('/{product_id}', [ProductController::class, 'update']); // Update Product
+    Route::post('/{product_id}', [ProductController::class, 'update']); // Update Product
     Route::delete('/{product_id}', [ProductController::class, 'destroy']); // Delete Product
     Route::get('/type/{type}', [ProductController::class, 'getProductsByType']); // Read All Products by Type
 });
 
 
-Route::prefix('orders')->middleware('auth:sanctum')->group(function () {
+
+
+Route::prefix('orders')->group(function () {
     Route::post('/', [OrderController::class, 'store']);
     Route::get('/', [OrderController::class, 'index']);
-    Route::patch('/{orderID}', [OrderController::class, 'edit']);
-    Route::put('/{orderID}', [OrderController::class, 'update']);
-    Route::get('/{orderID}', [OrderController::class, 'show']);
-    Route::patch('/{order}/payment', [OrderController::class, 'payment']);
+    Route::patch('/{order_id}', [OrderController::class, 'edit']);
+    Route::put('/{order_id}', [OrderController::class, 'update']);
+    Route::get('/{order_id}', [OrderController::class, 'show']);
+    Route::patch('/{order_id}/payment', [OrderController::class, 'payment']);
     Route::get('/type/{type}', [OrderController::class, 'getOrdersByType']);
 });
 

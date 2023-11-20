@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
+use App\Models\Order;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -11,14 +13,12 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
-    }
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        try {
+            $orders = Order::all();
+            return ResponseHelper::success($orders, 'Orders retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to retrieve orders', 500, $e->getMessage());
+        }
     }
 
     /**
