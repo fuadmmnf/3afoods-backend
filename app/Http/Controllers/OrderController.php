@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+
 
 class OrderController extends Controller
 {
@@ -60,4 +63,33 @@ class OrderController extends Controller
     {
         //
     }
+
+    public function getOrdersByTypeAndStatus(string $type, string $status)
+    {
+        try {
+            $validatedData = validator([
+                'type' => $type,
+                'status' => $status,
+            ], [
+                'type' => ['required', Rule::in(['retail', 'wholesale'])],
+                'status' => ['required', Rule::in(['draft', 'pending', 'completed'])],
+            ]);
+
+            if ($validatedData->fails()) {
+                throw new ValidationException($validatedData);
+            }
+
+            $orders = Order::where('type', $type)
+                ->where('status', $status)
+                ->get();
+
+            return ResponseHelper::success($orders, 'Orders retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to retrieve orders', 500, $e->getMessage());
+        }
+    }
+
+
+
+
 }
