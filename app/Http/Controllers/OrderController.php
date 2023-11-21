@@ -89,6 +89,31 @@ class OrderController extends Controller
         }
     }
 
+    public function completeOrder(string $order_id)
+    {
+        try {
+            // Find the order by ID
+            $order = Order::find($order_id);
+
+            // Check if the order exists
+            if (!$order) {
+                return ResponseHelper::error("Order with ID $order_id not found", 404);
+            }
+
+            // Check if the order is in pending status
+            if ($order->status !== 'pending') {
+                return ResponseHelper::error("Order with ID $order_id is not in pending status", 422);
+            }
+
+            // Update the order status to completed
+            $order->update(['status' => 'completed']);
+
+            return ResponseHelper::success([], 'Order status updated to completed', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to update order status', 500, $e->getMessage());
+        }
+    }
+
 
 
 

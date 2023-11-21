@@ -70,6 +70,7 @@ Route::prefix('orders')->group(function () {
     Route::put('/{order_id}', [OrderController::class, 'update']);
     Route::get('/{order_id}', [OrderController::class, 'show']);
     Route::patch('/{order_id}/payment', [OrderController::class, 'payment']);
+    Route::patch('/{order_id}/complete', [OrderController::class, 'completeOrder']);
     Route::get('/type/{type}/status/{status}', [OrderController::class, 'getOrdersByTypeAndStatus']);
 });
 

@@ -106,11 +106,10 @@ class ProductController extends Controller
     {
         try {
             $product = Product::find($id);
-
             if (!$product) {
                 return ResponseHelper::error('Product not found', 404);
             }
-
+            $product->delete();
             return ResponseHelper::success([], 'Product deleted successfully', 200);
         } catch (\Exception $e) {
             return ResponseHelper::error('Failed to delete product', 500, $e->getMessage());
