@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\OrderRequest;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -24,13 +26,50 @@ class OrderController extends Controller
         }
     }
 
+
+
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(OrderRequest $request)
     {
-        //
+        try {
+            // Validate and create the order
+            $orderData = $request->validated();
+//            $orderData['status']="default";
+            info($orderData);
+//            echo  $orderData;
+            $order = Order::create($orderData);
+
+            // Attach products to the order
+            $this->attachProductsToOrder($order, $request->input('cart'));
+
+            return ResponseHelper::success($order, 'Order placed successfully', 201);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to place order', 500, $e->getMessage());
+        }
     }
+    private function attachProductsToOrder(Order $order, array $cart)
+    {
+
+        foreach ($cart as $item) {
+            // Validate if the product exists
+            $product = Product::findOrFail($item['product_id']);
+            $order->products()->attach($product->id, [
+                'quantity' => $item['quantity'],
+                'price' => $item['price'], // Use the provided price from the request
+//                'created_at' => now(),
+//                'updated_at' => now(),
+            ]);
+        }
+    }
+
+
+
+
+
+
+
 
     /**
      * Display the specified resource.

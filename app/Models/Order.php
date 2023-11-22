@@ -18,6 +18,12 @@ class Order extends Model
         'email',
         'additional_info',
         'status',
+        'user_id',
+        'total_price'
     ];
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'order_products')->withPivot(['quantity', 'price','created_at','updated_at']);
+    }
 
 }

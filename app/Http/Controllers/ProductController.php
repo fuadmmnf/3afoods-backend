@@ -93,7 +93,14 @@ class ProductController extends Controller
             if (!in_array($type, ['retail', 'wholesale'])) {
                 return ResponseHelper::error('Invalid product type', 400);
             }
-            $products = Product::with(['category:id,category_name'])->where('type', $type)->get();
+            $limit = request()->query('limit', null);
+
+            $productsQuery = Product::with(['category:id,category_name'])->where('type', $type);
+
+            if (is_numeric($limit)) {
+                $productsQuery->limit($limit);
+            }
+            $products = $productsQuery->get();
             return ResponseHelper::success($products, 'Products retrieved successfully', 200);
         } catch (\Exception $e) {
             return ResponseHelper::error('Failed to retrieve products', 500, $e->getMessage());
