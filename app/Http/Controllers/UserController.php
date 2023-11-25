@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,51 +12,55 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
 
-    public function register(Request $request)
+    public function register(UserRequest $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'usertype' => 'nullable|string',
-            'phone' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
+        try {
+            $validatedData = $request->validated();
+            $validatedData['password'] = Hash::make($validatedData['password']);
+            $user = User::create($validatedData);
+            // Log in the user
+//            Auth::login($user);
 
-
-        $user = User::create([
-            'name' => $request->name,
-            'usertype' => $request->usertype,
-            'phone' => $request->phone,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json(['message' => 'User registered successfully', 'user' => $user, 'token' => $token], 201);
+            // Generate and attach an API token
+            $token = $user->createToken($user->email)->plainTextToken;
+            return ResponseHelper::success(['email' => $user->email, 'user_type' => $user->usertype, 'token' => $token],"User registered and logged in successfully",201);
+        }
+        catch (\Exception $e) {
+            return ResponseHelper::error('Failed to register user',500,$e->getMessage());
+        }
     }
 
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
+        try {
+            $credentials =  $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
 
-        $user = User::where('email', $request->email)->first();
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json(['message' => 'Invalid login credentials'], 401);
+
+            if (Auth::attempt($credentials)) {
+                $user = Auth::user();
+                $token = $user->createToken($user->email)->plainTextToken;
+
+                return response()->json(['email' => $user->email, 'user_type' => $user->usertype, 'token' => $token, 'message' => 'User logged in successfully'], 200);
+            }
+
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to log in', 'error' => $e->getMessage()], 500);
         }
-
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-        return response()->json(['message' => 'Login successful', 'user' => $user, 'token' => $token]);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
+        try {
+            $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logout successful']);
+            return response()->json(['message' => 'Logout successful'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to logout', 'error' => $e->getMessage()], 500);
+        }
     }
 
     /**

@@ -58,8 +58,6 @@ class OrderController extends Controller
             $order->products()->attach($product->id, [
                 'quantity' => $item['quantity'],
                 'price' => $item['price'], // Use the provided price from the request
-//                'created_at' => now(),
-//                'updated_at' => now(),
             ]);
         }
     }
