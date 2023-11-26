@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ShippingProductController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -60,6 +61,13 @@ Route::prefix('products')->group(function () {
     Route::get('/type/{type}', [ProductController::class, 'getProductsByType']); // Read All Products by Type
 });
 
+Route::prefix('shipping_products_inquiry')->group(function () {
+    Route::post('/', [ShippingProductController::class, 'store']); // Add Shipping Product
+    Route::get('/', [ShippingProductController::class, 'index']); // Read All Shipping Products
+    Route::get('/{shipping_product_id}', [ShippingProductController::class, 'show']); // Read Single Shipping Product
+    Route::post('/{shipping_product_id}', [ShippingProductController::class, 'update']); // Update Shipping Product
+    Route::delete('/{shipping_product_id}', [ShippingProductController::class, 'destroy']); // Delete Shipping Product
+});
 
 
 
