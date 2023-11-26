@@ -20,10 +20,9 @@ class UserController extends Controller
             $user = User::create($validatedData);
             // Log in the user
 //            Auth::login($user);
-
             // Generate and attach an API token
             $token = $user->createToken($user->email)->plainTextToken;
-            return ResponseHelper::success(['email' => $user->email, 'user_type' => $user->usertype, 'token' => $token],"User registered and logged in successfully",201);
+            return ResponseHelper::success(['name' => $user->name, 'user_type' => $user->usertype,'role' => 'user', 'token' => $token],"User registered and logged in successfully",201);
         }
         catch (\Exception $e) {
             return ResponseHelper::error('Failed to register user',500,$e->getMessage());
@@ -37,18 +36,16 @@ class UserController extends Controller
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
-
-
             if (Auth::attempt($credentials)) {
                 $user = Auth::user();
                 $token = $user->createToken($user->email)->plainTextToken;
+                $role = $user->hasRole('admin') ? 'admin' : 'user';
 
-                return response()->json(['email' => $user->email, 'user_type' => $user->usertype, 'token' => $token, 'message' => 'User logged in successfully'], 200);
+                return ResponseHelper::success(['name' => $user->name, 'user_type' => $user->usertype, 'role' => $role, 'token' => $token],'User logged in successfully', 200);
             }
-
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return ResponseHelper::error( 'Invalid credentials', 401);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to log in', 'error' => $e->getMessage()], 500);
+            return ResponseHelper::error( 'Failed to log in',500, $e->getMessage());
         }
     }
 
