@@ -36,12 +36,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
 //    Route::put('/users/me/change-password', [UserController::class, 'changePassword']);
 
     //(admin-only)
-    Route::get('/users', [UserController::class, 'index']);
-    Route::get('/users/{userID}', [UserController::class, 'show']);
-    Route::put('/users/{userID}', [UserController::class, 'update']);
-    Route::delete('/users/{userID}', [UserController::class, 'destroy']);
     Route::patch('/users/{userID}/change-password', [UserController::class, 'changePassword']);
 });
+Route::get('/users', [UserController::class, 'index']);
+Route::get('/users/{user_id}', [UserController::class, 'show']);
+Route::put('/users/{user_id}', [UserController::class, 'update']);
+Route::delete('/users/{user_id}', [UserController::class, 'destroy']);
+Route::get('/users/usertype/{usertype}', [UserController::class, 'getUsersByUsertype']);
 
 
 Route::prefix('categories')->group(function () {

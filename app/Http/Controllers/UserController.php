@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -65,39 +66,48 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $users = User::all();
+            return ResponseHelper::success($users, 'Users retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to retrieve users', 500, $e->getMessage());
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show($user_id)
     {
-        //
+        try {
+            $user = User::find($user_id);
+
+            if (!$user) {
+                return ResponseHelper::error("User with ID $user_id not found", 404);
+            }
+
+            return ResponseHelper::success($user, 'User retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to retrieve user', 500, $e->getMessage());
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function getUsersByUsertype($usertype)
     {
-        //
-    }
+        try {
+            // Validate usertype
+            $validator = validator(['usertype' => $usertype], [
+                'usertype' => ['required', Rule::in(['retail', 'wholesale'])],
+            ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+            if ($validator->fails()) {
+                return ResponseHelper::error('The usertype is invalid', 422, $validator->errors()->first());
+            }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+            // If validation passes, retrieve users
+            $users = User::where('usertype', $usertype)->get();
+
+            return ResponseHelper::success($users, 'Users retrieved by usertype successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to retrieve users by usertype', 500, $e->getMessage());
+        }
     }
 
     /**
@@ -111,8 +121,20 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($user_id)
     {
-        //
+        try {
+            $user = User::find($user_id);
+
+            if (!$user) {
+                return ResponseHelper::error("User with ID $user_id not found", 404);
+            }
+
+            $user->delete();
+
+            return ResponseHelper::success([], 'User deleted successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to delete user', 500, $e->getMessage());
+        }
     }
 }
