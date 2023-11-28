@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactUsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShippingProductController;
 use App\Http\Controllers\UserController;
@@ -29,50 +30,71 @@ use App\Http\Controllers\ProductController;
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [UserController::class, 'logout']);
-
-Route::middleware(['auth:sanctum'])->group(function () {
-//    Route::get('/users/me', [UserController::class, 'me']);
-//    Route::put('/users/me', [UserController::class, 'updateProfile']);
-//    Route::put('/users/me/change-password', [UserController::class, 'changePassword']);
-
-    //(admin-only)
-    Route::patch('/users/{userID}/change-password', [UserController::class, 'changePassword']);
-});
-Route::get('/users', [UserController::class, 'index']);
-Route::get('/users/{user_id}', [UserController::class, 'show']);
-Route::put('/users/{user_id}', [UserController::class, 'update']);
-Route::delete('/users/{user_id}', [UserController::class, 'destroy']);
-Route::get('/users/usertype/{usertype}', [UserController::class, 'getUsersByUsertype']);
+Route::middleware('auth:sanctum')->post('/contact-us', [ContactUsController::class, 'submit']);
 
 
-Route::prefix('categories')->group(function () {
-    Route::post('/', [CategoryController::class, 'store']); // Add Category
-    Route::get('/', [CategoryController::class, 'index']); // Read All Categories
-    Route::get('/{category_id}', [CategoryController::class, 'show']); // Read Single Category
-    Route::put('/{category_id}', [CategoryController::class, 'update']); // Update Category
-    Route::delete('/{category_id}', [CategoryController::class, 'destroy']); // Delete Category
+
+Route::prefix('users')->middleware(['auth:sanctum'])->group(function () {
+    // Normal user routes
+    Route::get('/{user_id}', [UserController::class, 'show']);
+    Route::put('/{user_id}', [UserController::class, 'update']);
+    Route::patch('/{user_id}/change-password', [UserController::class, 'changePassword']);
+
+    // Admin-only routes
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::get('/usertype/{usertype}', [UserController::class, 'getUsersByUsertype']);
+        Route::delete('/{user_id}', [UserController::class, 'destroy']);
+    });
 });
 
-Route::prefix('products')->group(function () {
-    Route::post('/', [ProductController::class, 'store']); // Add Product
+
+
+Route::prefix('categories')->middleware(['auth:sanctum'])->group(function () {
+//    normal user
+
+//    admin-only routes
+    Route::middleware(['admin'])->group(function (){
+        Route::post('/', [CategoryController::class, 'store']); // Add Category
+        Route::get('/', [CategoryController::class, 'index']); // Read All Categories
+        Route::get('/{category_id}', [CategoryController::class, 'show']); // Read Single Category
+        Route::put('/{category_id}', [CategoryController::class, 'update']); // Update Category
+        Route::delete('/{category_id}', [CategoryController::class, 'destroy']); // Delete Category
+    });
+});
+
+Route::prefix('products')->middleware(['auth:sanctum'])->group(function () {
+    // normal user
     Route::get('/', [ProductController::class, 'index']); // Read All Products
     Route::get('/{product_id}', [ProductController::class, 'show']); // Read Single Product
-    Route::post('/{product_id}', [ProductController::class, 'update']); // Update Product
-    Route::delete('/{product_id}', [ProductController::class, 'destroy']); // Delete Product
     Route::get('/type/{type}', [ProductController::class, 'getProductsByType']); // Read All Products by Type
+
+    // admin-only routes
+    Route::middleware(['admin'])->group(function (){
+        Route::post('/', [ProductController::class, 'store']); // Add Product
+        Route::post('/{product_id}', [ProductController::class, 'update']); // Update Product
+        Route::delete('/{product_id}', [ProductController::class, 'destroy']); // Delete Product
+    });
+
 });
 
-Route::prefix('shipping_products_inquiry')->group(function () {
+Route::prefix('shipping_products_inquiry')->middleware(['auth:sanctum'])->group(function () {
+    // normal user
     Route::post('/', [ShippingProductController::class, 'store']); // Add Shipping Product
+
+    // admin-only routes
     Route::get('/', [ShippingProductController::class, 'index']); // Read All Shipping Products
     Route::get('/{shipping_product_id}', [ShippingProductController::class, 'show']); // Read Single Shipping Product
     Route::post('/{shipping_product_id}', [ShippingProductController::class, 'update']); // Update Shipping Product
     Route::delete('/{shipping_product_id}', [ShippingProductController::class, 'destroy']); // Delete Shipping Product
 });
 
-
+Route::post('send-dummy-data', [OrderController::class, 'sendDummyData']);
 
 Route::prefix('orders')->group(function () {
+    // normal user
+
+    // admin-only routes
     Route::post('/', [OrderController::class, 'store']);
     Route::get('/', [OrderController::class, 'index']);
     Route::patch('/{order_id}', [OrderController::class, 'edit']);

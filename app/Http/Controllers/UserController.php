@@ -41,7 +41,6 @@ class UserController extends Controller
                 $user = Auth::user();
                 $token = $user->createToken($user->email)->plainTextToken;
                 $role = $user->hasRole('admin') ? 'admin' : 'user';
-
                 return ResponseHelper::success(['name' => $user->name, 'user_type' => $user->usertype, 'role' => $role, 'token' => $token],'User logged in successfully', 200);
             }
             return ResponseHelper::error( 'Invalid credentials', 401);

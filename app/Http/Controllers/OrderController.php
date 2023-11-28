@@ -6,6 +6,7 @@ use App\Helpers\ResponseHelper;
 use App\Http\Requests\OrderRequest;
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\FirebaseService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -13,6 +14,12 @@ use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
+
+    protected $firebaseService;
+    public function __construct(FirebaseService $firebaseService)
+    {
+        $this->firebaseService = $firebaseService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -26,6 +33,23 @@ class OrderController extends Controller
         }
     }
 
+//    public function sendDummyData(Request $request)
+//    {
+//        try {
+//            $data = [
+//                'name' => $request->input('name'),
+//                'email' => $request->input('email'),
+//                // Add other data as needed
+//            ];
+//
+//            // Send data to Firebase
+//            $firebaseKey = $this->firebaseService->sendOrderData($data);
+//
+//            return response()->json(['message' => 'Data sent to Firebase successfully', 'firebase_key' => $firebaseKey], 200);
+//        } catch (\Exception $e) {
+//            return response()->json(['error' => 'Failed to send data to Firebase', 'message' => $e->getMessage()], 500);
+//        }
+//    }
 
 
     /**
@@ -36,10 +60,26 @@ class OrderController extends Controller
         try {
             // Validate and create the order
             $orderData = $request->validated();
-//            $orderData['status']="default";
-            info($orderData);
-//            echo  $orderData;
             $order = Order::create($orderData);
+
+            $firebaseData = [
+                'name' => $orderData['name'],
+                'company' => $orderData['company'],
+                'contact' => $orderData['contact'],
+                'order_detail' => $orderData['order_detail'],
+                'created_at' =>$orderData['created_at'],
+                'to' => "rahatuddin786@gmail.com",
+                'replyTo' => $orderData['email'],
+                'message' => [
+                    'subject' => "---3aFood Order--- ",
+                    'html' => "<b>Name:</b> " . $orderData['name'] .
+                        "<br><b>Company:</b> " . $orderData['company'] .
+                        "<br><b>Contact:</b> " . $orderData['contact'],
+                ],
+            ];
+
+            // Store data in Firebase
+            $firebaseKey = $this->firebaseService->sendEmail($firebaseData);
 
             // Attach products to the order
             $this->attachProductsToOrder($order, $request->input('cart'));
