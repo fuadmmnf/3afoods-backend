@@ -2,26 +2,38 @@
 
 namespace App\Services;
 
+
+use Google\Cloud\Core\Exception\GoogleException;
 use Kreait\Firebase\Factory;
+use Google\Cloud\Firestore\FirestoreClient;
 
 class FirebaseService
 {
     protected $firebase;
+    protected $firestore;
 
+    /**
+     * @throws GoogleException
+     */
     public function __construct()
     {
         $this->firebase = (new Factory)
             ->withServiceAccount(config('firebase.credentials.file'))
-            ->withDatabaseUri(config('firebase.database_url'))
-            ->createDatabase();
+            ->createFirestore();
+
+        $this->firestore = new FirestoreClient([
+            'projectId' => config('firebase.project_id')
+        ]);
+
     }
 
     public function sendEmail(array $data)
     {
-        $reference =$this->firebase->getReference('emails')->push($data);
+        $collection = $this->firestore->collection('emails');
+        $newDocument = $collection->add($data);
 
-        // You can get the generated key if needed
-        $key = $reference->getKey();
+        // You can get the generated key (document ID) if needed
+        $key = $newDocument->id();
 
         return $key;
     }

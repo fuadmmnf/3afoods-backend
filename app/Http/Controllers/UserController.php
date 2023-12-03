@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -73,16 +74,16 @@ class UserController extends Controller
         }
     }
 
-    public function show($user_id)
+    public function show()
     {
         try {
-            $user = User::find($user_id);
-
-            if (!$user) {
-                return ResponseHelper::error("User with ID $user_id not found", 404);
-            }
-
-            return ResponseHelper::success($user, 'User retrieved successfully', 200);
+            $user = User::find(Auth::id());
+            $userData = [
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+            ];
+            return ResponseHelper::success( $userData, 'User retrieved successfully', 200);
         } catch (\Exception $e) {
             return ResponseHelper::error('Failed to retrieve user', 500, $e->getMessage());
         }
@@ -108,6 +109,46 @@ class UserController extends Controller
             return ResponseHelper::error('Failed to retrieve users by usertype', 500, $e->getMessage());
         }
     }
+
+    public function updateAccountInfo(UserRequest $request)
+    {
+        try {
+            $user = Auth::user();
+
+            // Validate the request, including the current password validation for updates
+            $data = $request->validated();
+
+            // Update the user information
+            $user->update($data);
+            $userData = [
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+            ];
+            return ResponseHelper::success( $userData , 'User account information updated successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to update user account information', 500, $e->getMessage());
+        }
+    }
+
+    public function changePassword(ChangePasswordRequest $request)
+    {
+        try {
+            // Get the authenticated user's ID
+            $userId = Auth::id();
+            $user = User::find($userId);
+            $data = $request->validated();
+            // Update the user's password with the new password
+            $user->password = Hash::make($data['new_password']);
+            $user->save();
+            return ResponseHelper::success([], 'Password changed successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to change password', 500, $e->getMessage());
+        }
+    }
+
+
+
 
     /**
      * Update the specified resource in storage.

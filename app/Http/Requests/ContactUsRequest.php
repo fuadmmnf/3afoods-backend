@@ -29,3 +29,4 @@ class ContactUsRequest extends FormRequest
         ];
     }
 }
+

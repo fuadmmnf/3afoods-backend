@@ -31,10 +31,11 @@ class OrderRequest extends FormRequest
             'cart' => 'required|array',
             'cart.*.product_id' => 'required|exists:products,id',
             'cart.*.quantity' => 'required|integer|min:1',
-            'cart.*.price' => 'required|numeric|min:0',
+            'cart.*.price' => 'nullable|numeric|min:0',
             'company_name' => 'nullable|string',
-            'total_price' => 'required|numeric|min:0',
-            'user_id' => 'required|exists:users,id',
+            'total_price' => 'nullable|numeric|min:0',
         ];
     }
+
+
 }

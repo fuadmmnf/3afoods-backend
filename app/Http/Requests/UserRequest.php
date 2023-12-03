@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UserRequest extends FormRequest
 {
@@ -21,17 +22,35 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $userId = Auth::id();
+
         $rules = [
-            'name' => 'required|string',
-            'email' => 'required|email',
-            'password' => 'required|min:6',
-            'phone' => 'required|string',
-            'usertype'=>'required|string|in:retail,wholesale'
+            'name' => 'string',
+            'email' => 'email|unique:users,email,' . $userId,
+            'phone' => 'string',
+            'usertype' => 'string|in:retail,wholesale',
         ];
 
-        if ($this->isMethod('post')) {
+        // If the request is for updating, include the current password validation
+        if ($this->isMethod('patch')) {
+            $rules['current_password'] = [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) {
+                    if (!\Hash::check($value, auth()->user()->password)) {
+                        $fail(__('The current password is incorrect.'));
+                    }
+                },
+            ];
+        } else {
             // Additional rules for user registration
-            $rules['email'] .= '|unique:users,email';
+            $rules += [
+                'name' => 'required|string',
+                'email' => 'required|email|unique:users,email',
+                'password' => 'required|min:6',
+                'phone' => 'required|string',
+                'usertype' => 'required|string|in:retail,wholesale',
+            ];
         }
 
         return $rules;

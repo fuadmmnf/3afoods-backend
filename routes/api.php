@@ -36,9 +36,9 @@ Route::middleware('auth:sanctum')->post('/contact-us', [ContactUsController::cla
 
 Route::prefix('users')->middleware(['auth:sanctum'])->group(function () {
     // Normal user routes
-    Route::get('/{user_id}', [UserController::class, 'show']);
-    Route::put('/{user_id}', [UserController::class, 'update']);
-    Route::patch('/{user_id}/change-password', [UserController::class, 'changePassword']);
+    Route::get('/user', [UserController::class, 'show']);
+    Route::patch('/update-account', [UserController::class, 'updateAccountInfo']);
+    Route::patch('/change-password', [UserController::class, 'changePassword']);
 
     // Admin-only routes
     Route::middleware(['admin'])->group(function () {
@@ -89,18 +89,20 @@ Route::prefix('shipping_products_inquiry')->middleware(['auth:sanctum'])->group(
     Route::delete('/{shipping_product_id}', [ShippingProductController::class, 'destroy']); // Delete Shipping Product
 });
 
+
 Route::post('send-dummy-data', [OrderController::class, 'sendDummyData']);
 
-Route::prefix('orders')->group(function () {
+Route::prefix('orders')->middleware(['auth:sanctum'])->group(function () {
     // normal user
+    Route::post('/', [OrderController::class, 'store']);
+    Route::patch('/{order_id}/payment', [OrderController::class, 'payment']);
+
 
     // admin-only routes
-    Route::post('/', [OrderController::class, 'store']);
     Route::get('/', [OrderController::class, 'index']);
     Route::patch('/{order_id}', [OrderController::class, 'edit']);
     Route::put('/{order_id}', [OrderController::class, 'update']);
     Route::get('/{order_id}', [OrderController::class, 'show']);
-    Route::patch('/{order_id}/payment', [OrderController::class, 'payment']);
     Route::patch('/{order_id}/complete', [OrderController::class, 'completeOrder']);
     Route::get('/type/{type}/status/{status}', [OrderController::class, 'getOrdersByTypeAndStatus']);
 });

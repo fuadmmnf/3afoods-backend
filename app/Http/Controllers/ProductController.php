@@ -103,7 +103,7 @@ class ProductController extends Controller
             $products = $productsQuery->get();
             return ResponseHelper::success($products, 'Products retrieved successfully', 200);
         } catch (\Exception $e) {
-            return ResponseHelper::error('Failed to retrieve products', 500, $e->getMessage());
+            return ResponseHelper::error('Failed to retrieve products', 500);
         }
     }
     /**
