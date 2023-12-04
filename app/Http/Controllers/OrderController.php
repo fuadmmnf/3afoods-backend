@@ -126,6 +126,50 @@ class OrderController extends Controller
 
 
 
+    public function getUserOrderHistory()
+    {
+        try {
+            // Get the authenticated user's ID
+            $userId = Auth::id();
+
+            // Retrieve the order history for the user
+            $orderHistory = Order::where('user_id', $userId)
+                ->with(['products' => function ($query) {
+                    $query->select('products.id', 'products.title')
+                        ->withPivot(['quantity', 'price']);
+                }])
+                ->get();
+
+            $transformedOrderHistory = $orderHistory->map(function ($order) {
+                return [
+                    'fname' => $order->fname,
+                    'lname' => $order->lname,
+                    'company_name' => $order->company_name,
+                    'address' => $order->address,
+                    'phone_num' => $order->phone_num,
+                    'email' => $order->email,
+                    'additional_info' => $order->additional_info,
+                    'total_price' => $order->total_price,
+                    'status' => $order->status,
+                    'created_at' => $order->created_at,
+                    'updated_at' => $order->updated_at,
+                    'products' => $order->products->map(function ($product) {
+                        return [
+                            'title' => $product->title,
+                            'quantity' => $product->pivot->quantity,
+                            'price' => $product->pivot->price,
+                        ];
+                    }),
+                ];
+            });
+
+
+
+            return ResponseHelper::success(  $transformedOrderHistory, 'User order history retrieved successfully', 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::error('Failed to retrieve user order history', 500, $e->getMessage());
+        }
+    }
 
 
 

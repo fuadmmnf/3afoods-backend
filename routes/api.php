@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactUsController;
+use App\Http\Controllers\FaqController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ShippingProductController;
 use App\Http\Controllers\UserController;
@@ -83,10 +84,13 @@ Route::prefix('shipping_products_inquiry')->middleware(['auth:sanctum'])->group(
     Route::post('/', [ShippingProductController::class, 'store']); // Add Shipping Product
 
     // admin-only routes
-    Route::get('/', [ShippingProductController::class, 'index']); // Read All Shipping Products
-    Route::get('/{shipping_product_id}', [ShippingProductController::class, 'show']); // Read Single Shipping Product
-    Route::post('/{shipping_product_id}', [ShippingProductController::class, 'update']); // Update Shipping Product
-    Route::delete('/{shipping_product_id}', [ShippingProductController::class, 'destroy']); // Delete Shipping Product
+    Route::middleware(['admin'])->group(function (){
+        Route::get('/', [ShippingProductController::class, 'index']); // Read All Shipping Products
+        Route::get('/{shipping_product_id}', [ShippingProductController::class, 'show']); // Read Single Shipping Product
+        Route::post('/{shipping_product_id}', [ShippingProductController::class, 'update']); // Update Shipping Product
+        Route::delete('/{shipping_product_id}', [ShippingProductController::class, 'destroy']); // Delete Shipping Product
+    });
+
 });
 
 
@@ -96,17 +100,35 @@ Route::prefix('orders')->middleware(['auth:sanctum'])->group(function () {
     // normal user
     Route::post('/', [OrderController::class, 'store']);
     Route::patch('/{order_id}/payment', [OrderController::class, 'payment']);
+    Route::get('/history', [OrderController::class, 'getUserOrderHistory']);
 
 
     // admin-only routes
-    Route::get('/', [OrderController::class, 'index']);
-    Route::patch('/{order_id}', [OrderController::class, 'edit']);
-    Route::put('/{order_id}', [OrderController::class, 'update']);
-    Route::get('/{order_id}', [OrderController::class, 'show']);
-    Route::patch('/{order_id}/complete', [OrderController::class, 'completeOrder']);
-    Route::get('/type/{type}/status/{status}', [OrderController::class, 'getOrdersByTypeAndStatus']);
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/', [OrderController::class, 'index']);
+        Route::patch('/{order_id}', [OrderController::class, 'edit']);
+        Route::put('/{order_id}', [OrderController::class, 'update']);
+        Route::get('/{order_id}', [OrderController::class, 'show']);
+        Route::patch('/{order_id}/complete', [OrderController::class, 'completeOrder']);
+        Route::get('/type/{type}/status/{status}', [OrderController::class, 'getOrdersByTypeAndStatus']);
+    });
 });
 
+
+
+Route::prefix('faqs')->middleware(['auth:sanctum'])->group(function () {
+    // normal user
+    Route::get('/', [FaqController::class, 'index']); // Read All FAQs
+
+
+    // admin-only routes
+    Route::middleware(['admin'])->group(function () {
+        Route::post('/', [FaqController::class, 'store']); // Add FAQ
+        Route::get('/{faq_id}', [FaqController::class, 'show']); // Read Single FAQ
+        Route::put('/{faq_id}', [FaqController::class, 'update']); // Update FAQ
+        Route::delete('/{faq_id}', [FaqController::class, 'destroy']); // Delete FAQ
+    });
+    });
 
 
 
