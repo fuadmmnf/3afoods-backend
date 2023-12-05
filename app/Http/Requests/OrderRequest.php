@@ -30,7 +30,7 @@ class OrderRequest extends FormRequest
             'additional_info' => 'nullable|string',
             'cart' => 'required|array',
             'cart.*.product_id' => 'required|exists:products,id',
-            'cart.*.quantity' => 'required|integer|min:1',
+            'cart.*.quantity' => 'required|numeric|min:1',
             'cart.*.price' => 'nullable|numeric|min:0',
             'company_name' => 'nullable|string',
             'total_price' => 'nullable|numeric|min:0',
