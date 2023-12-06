@@ -163,8 +163,6 @@ class OrderController extends Controller
                 ];
             });
 
-
-
             return ResponseHelper::success(  $transformedOrderHistory, 'User order history retrieved successfully', 200);
         } catch (\Exception $e) {
             return ResponseHelper::error('Failed to retrieve user order history', 500, $e->getMessage());

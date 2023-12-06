@@ -30,6 +30,7 @@ use App\Http\Controllers\ProductController;
 
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/login', [UserController::class, 'login']);
+Route::post('/reset-password', [UserController::class, 'resetPassword']);
 Route::middleware('auth:sanctum')->post('/logout', [UserController::class, 'logout']);
 Route::middleware('auth:sanctum')->post('/contact-us', [ContactUsController::class, 'submit']);
 

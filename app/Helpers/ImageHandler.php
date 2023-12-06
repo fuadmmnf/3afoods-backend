@@ -17,13 +17,13 @@ class ImageHandler
      * @return string
      * @throws \Exception
      */
-    public static function upload($image, $directory, $maxSize = 2048, $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'])
+    public static function upload($image, $directory, $maxSize = 5048, $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'])
     {
         try {
-            // Validate image size
-            if ($image->getSize() > $maxSize * 1024) {
-                throw new \Exception("Image size exceeds the maximum allowed size of {$maxSize} KB.");
-            }
+//            // Validate image size
+//            if ($image->getSize() > $maxSize * 1024) {
+//                throw new \Exception("Image size exceeds the maximum allowed size of {$maxSize} KB.");
+//            }
 
             // Validate image extension
             $extension = $image->getClientOriginalExtension();

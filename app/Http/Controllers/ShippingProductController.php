@@ -6,10 +6,17 @@ use App\Helpers\FileHandler;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\ShippingProductRequest;
 use App\Models\ShippingProduct;
+use App\Services\FirebaseService;
 use Illuminate\Http\Request;
 
 class ShippingProductController extends Controller
 {
+
+    protected $firebaseService;
+    public function __construct(FirebaseService $firebaseService)
+    {
+        $this->firebaseService = $firebaseService;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -42,6 +49,27 @@ class ShippingProductController extends Controller
             $shippingProductData = $request->validated();
             $shippingProductData['file'] = $filePath;
 
+
+            $firebaseData = [
+                'name' =>   $shippingProductData['name'],
+                'type'=>'Ship Supply Order',
+                'email' =>   $shippingProductData['email'],
+                'created_at' =>now()->toDateTimeString(),
+                'to' => "rahatuddin786@gmail.com",
+                'replyTo' => $shippingProductData['email'],
+                'message' => [
+                    'subject' => "---3aFood Ship Supply Order--- ",
+                    'html' => "<b>Name:</b> " . $shippingProductData['name'].
+                        "<br><b>Business Name:</b> " .  $shippingProductData['business_name'] .
+                        "<br><b>Avn:</b> " .$shippingProductData['avn'] .
+                        "<br><b>Contat Info:</b> " .$shippingProductData['contact_info'] .
+                        "<br><b>Website_name:</b> " .$shippingProductData['website_name'] .
+                        "<br><b>File Link:</b> " .$shippingProductData['file'] .
+                        "<br><b>Additional Info:</b> " .$shippingProductData['additional_info']
+
+                ],
+            ];
+            $firebaseKey = $this->firebaseService->sendEmail($firebaseData);
             $shippingProduct = ShippingProduct::create($shippingProductData);
 
             return ResponseHelper::success($shippingProduct, 'Shipping product added successfully', 201);

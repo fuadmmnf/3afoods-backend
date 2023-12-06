@@ -6,13 +6,21 @@ use App\Helpers\ResponseHelper;
 use App\Http\Requests\ChangePasswordRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
+use App\Services\FirebaseService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
+
+    protected $firebaseService;
+    public function __construct(FirebaseService $firebaseService)
+    {
+        $this->firebaseService = $firebaseService;
+    }
 
     public function register(UserRequest $request)
     {
@@ -145,6 +153,51 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return ResponseHelper::error('Failed to change password', 500, $e->getMessage());
         }
+    }
+
+    public function resetPassword(Request $request)
+    {
+        // Validate request data
+        $request->validate([
+            'email' => [
+                'required',
+                'email',
+                function ($attribute, $value, $fail) {
+                    if (!User::where('email', $value)->exists()) {
+                        $fail('No user found for the given email.');
+                    }
+                },
+            ],
+        ]);
+
+        // Generate a random 8-character password
+        $newPassword = Str::random(8);
+
+        // Find the user by email
+        $user = User::where('email', $request->email)->first();
+
+        // Update user password with the new one
+        $user->update([
+            'password' => Hash::make($newPassword),
+        ]);
+
+        // Prepare data for Firebase email
+        $data = [
+            'type'=>'Reset Password',
+            'to' =>  $request->email,
+            'message' => [
+                'subject' => "---3aFood- Reset Password--- ",
+                'html' => "<b>Email:</b> " .$request->email.
+                    "<br><b>Password:</b> " . $newPassword
+
+            ],
+
+        ];
+
+        // Send email using Firebase service
+        $this->firebaseService->sendEmail($data);
+        // Send success response
+        return ResponseHelper::success([],'New password sent to your email', 200);
     }
 
 
