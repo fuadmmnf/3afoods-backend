@@ -37,7 +37,7 @@ class ImageHandler
 
             // Save the image to the specified directory
             $path = $image->storeAs($directory, $imageName, 'public');
-            return url(Storage::url($path));
+            return Storage::url($path);
 
         } catch (\Exception $e) {
             throw new \Exception("Failed to upload image. {$e->getMessage()}");
