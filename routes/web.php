@@ -21,3 +21,8 @@ Route::get('/', function () {
 Route::get('/clear-cache', function () {
     Artisan::call('cache:clear');
 });
+
+
+Route::get('/storage-link', function () {
+    Artisan::call('storage:link');
+});
