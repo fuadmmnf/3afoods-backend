@@ -18,3 +18,6 @@ Route::get('/', function () {
 });
 
 
+Route::get('/clear-cache', function () {
+    Artisan::call('cache:clear');
+});
