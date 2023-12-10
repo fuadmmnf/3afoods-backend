@@ -26,8 +26,12 @@ class FileHandler
             $fileName = $file ? Str::random(20) . '.' . $extension : null;
 
             // Save the file to the specified directory
-            $path = $file ? $file->storeAs($directory, $fileName, 'public') : null;
-            return url(Storage::url($path));
+            if($file){
+                $file->move(public_path("storage/files"), $fileName);
+                return "/storage/files/$fileName";
+            }
+            return null;
+
 
         } catch (\Exception $e) {
             throw new \Exception("Failed to upload file. {$e->getMessage()}");
