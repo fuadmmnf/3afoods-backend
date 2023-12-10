@@ -29,7 +29,7 @@ class FirebaseService
 
     public function sendEmail(array $data)
     {
-        $collection = $this->firestore->collection('emails');
+        $collection = $this->firestore->collection('order-mails');
         $newDocument = $collection->add($data);
 
         // You can get the generated key (document ID) if needed
