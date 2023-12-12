@@ -27,7 +27,7 @@ class ImageHandler
             }
             // Generate a random name for the image
             $imageName = Str::random(20) . '.' . $extension;
-            $image->storeAs('product_img', $imageName,['disk' => 'public_upload']);
+            $image->move(public_path("storage/product_img"), $imageName);
             return "/storage/product_img/$imageName";
 
         } catch (\Exception $e) {
