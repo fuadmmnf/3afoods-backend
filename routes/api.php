@@ -116,11 +116,9 @@ Route::prefix('orders')->middleware(['auth:sanctum'])->group(function () {
 });
 
 
-
+Route::get('/faqs', [FaqController::class, 'index']); // Read All FAQs
 Route::prefix('faqs')->middleware(['auth:sanctum'])->group(function () {
     // normal user
-    Route::get('/', [FaqController::class, 'index']); // Read All FAQs
-
 
     // admin-only routes
     Route::middleware(['admin'])->group(function () {
