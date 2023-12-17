@@ -70,12 +70,13 @@ class OrderController extends Controller
             $orderDetailsHtml=$this->attachProductsToOrder($order, $request->input('cart'));
 
             $firebaseData = [
+                'type'=>'3a Food Order',
                 'name' => $orderData['fname'],
                 'company' => $orderData['company_name'],
                 'contact' => $orderData['phone_num'],
 //                'order_detail' => $orderData['order_detail'],
                 'created_at' =>now()->toDateTimeString(),
-                'to' => "rahatuddin786@gmail.com",
+                'to' => "orders@3afoods.com.au",
                 'replyTo' => $orderData['email'],
                 'message' => [
                     'subject' => "---3aFood Order--- ",

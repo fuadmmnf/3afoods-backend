@@ -22,14 +22,14 @@ class ContactUsController extends Controller
         $firebaseData = [
             'type'=>'Contact Us Form',
             'created_at' =>now()->toDateTimeString(),
-            'to' => "rahatuddin786@gmail.com",
+            'to' => "orders@3afoods.com.au",
             'replyTo' => $data ['email'],
             'message' => [
                 'subject' => "---3aFood-Contact Us--- ",
                 'html' => "<b>Name:</b> " . $data['name'].
                     "<br><b>Email:</b> " .$data['email'] .
                     "<br><b>Subject:</b> " .$data['subject'] .
-                    "<br><b>Contat Info:</b> " .$data['message']
+                    "<br><b>Message:</b> " .$data['message']
             ],
         ];
         $firebaseKey = $this->firebaseService->sendEmail($firebaseData);

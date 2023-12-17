@@ -55,14 +55,14 @@ class ShippingProductController extends Controller
                 'type'=>'Ship Supply Order',
                 'email' =>   $shippingProductData['email'],
                 'created_at' =>now()->toDateTimeString(),
-                'to' => "rahatuddin786@gmail.com",
+                'to' => "orders@3afoods.com.au",
                 'replyTo' => $shippingProductData['email'],
                 'message' => [
                     'subject' => "---3aFood Ship Supply Order--- ",
                     'html' => "<b>Name:</b> " . $shippingProductData['name'].
                         "<br><b>Business Name:</b> " .  $shippingProductData['business_name'] .
                         "<br><b>Avn:</b> " .$shippingProductData['avn'] .
-                        "<br><b>Contat Info:</b> " .$shippingProductData['contact_info'] .
+                        "<br><b>Contact Info:</b> " .$shippingProductData['contact_info'] .
                         "<br><b>Website_name:</b> " .$shippingProductData['website_name'] .
                         "<br><b>File Link:</b> " .$shippingProductData['file'] .
                         "<br><b>Additional Info:</b> " .$shippingProductData['additional_info']

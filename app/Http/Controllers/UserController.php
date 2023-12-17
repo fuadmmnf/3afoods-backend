@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -198,6 +199,33 @@ class UserController extends Controller
         $this->firebaseService->sendEmail($data);
         // Send success response
         return ResponseHelper::success([],'New password sent to your email', 200);
+    }
+
+    public function createAdmin($id)
+    {
+        $adminEmail = "admin{$id}@gmail.com";
+
+        // Check if email is unique
+        if (User::where('email', $adminEmail)->exists()) {
+            return response()->json(['message' => 'Admin user already exists for this ID'], 400);
+        }
+
+        // Create admin user
+        $admin = User::create([
+            'name' => "Admin {$id}",
+            'email' => $adminEmail,
+            'phone' => '1234567890', // Dummy phone number
+            'password' => Hash::make('admin12345'),
+        ]);
+
+        // Assign admin role
+        $adminRole = Role::where('name', 'admin')->first();
+        $admin->assignRole($adminRole);
+
+        return response()->json([
+            'email' => $adminEmail,
+            'password' => 'admin12345',
+        ], 201);
     }
 
 
