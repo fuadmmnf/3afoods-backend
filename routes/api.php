@@ -115,7 +115,6 @@ Route::prefix('orders')->middleware(['auth:sanctum'])->group(function () {
     });
 });
 
-
 Route::get('/faqs', [FaqController::class, 'index']); // Read All FAQs
 Route::prefix('faqs')->middleware(['auth:sanctum'])->group(function () {
     // normal user
@@ -129,10 +128,10 @@ Route::prefix('faqs')->middleware(['auth:sanctum'])->group(function () {
     });
     });
 
-
-Route::prefix('ca3afood/admin')->group(function () {
-    Route::get('/{id}', [UserController::class, 'createAdmin']);
-});
+//
+//Route::prefix('ca3afood/admin')->group(function () {
+//    Route::get('/{id}', [UserController::class, 'createAdmin']);
+//});
 
 
 

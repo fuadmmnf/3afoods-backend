@@ -19,6 +19,7 @@ class Order extends Model
         'additional_info',
         'status',
         'user_id',
+        'type',
         'total_price'
     ];
     public function products()

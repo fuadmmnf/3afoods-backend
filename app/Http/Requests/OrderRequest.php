@@ -26,6 +26,7 @@ class OrderRequest extends FormRequest
             'phone_num' => 'required',
             'fname' => 'required',
             'lname' => 'required',
+            'type' => 'required|string|in:retail,wholesale',
             'address' => 'required',
             'additional_info' => 'nullable|string',
             'cart' => 'required|array',
