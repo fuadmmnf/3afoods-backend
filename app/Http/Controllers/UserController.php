@@ -89,6 +89,8 @@ class UserController extends Controller
             $user = User::find(Auth::id());
             $userData = [
                 'name' => $user->name,
+                'company_name'=> $user->company_name,
+                'avn'=>$user->avn,
                 'email' => $user->email,
                 'phone' => $user->phone,
             ];
@@ -103,7 +105,7 @@ class UserController extends Controller
         try {
             // Validate usertype
             $validator = validator(['usertype' => $usertype], [
-                'usertype' => ['required', Rule::in(['retail', 'wholesale'])],
+                'usertype' => ['required', Rule::in(['retail', 'wholesale','ship_supply'])],
             ]);
 
             if ($validator->fails()) {
@@ -131,6 +133,8 @@ class UserController extends Controller
             $user->update($data);
             $userData = [
                 'name' => $user->name,
+                'company_name' => $user->company_name,
+                'avn' => $user->avn,
                 'email' => $user->email,
                 'phone' => $user->phone,
             ];

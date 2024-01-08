@@ -25,10 +25,10 @@ class UserRequest extends FormRequest
         $userId = Auth::id();
 
         $rules = [
-            'name' => 'string',
+            'name' => 'string|required',
             'email' => 'email|unique:users,email,' . $userId,
-            'phone' => 'string',
-            'usertype' => 'string|in:retail,wholesale',
+            'phone' => 'string|required',
+            'usertype' => 'string|in:retail,wholesale,ship_supply',
         ];
 
         // If the request is for updating, include the current password validation
@@ -45,11 +45,13 @@ class UserRequest extends FormRequest
         } else {
             // Additional rules for user registration
             $rules += [
-                'name' => 'required|string',
+                'name' => 'string|required',
+                'company_name' => 'nullable|string',
+                'avn' => 'nullable|string',
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|min:6',
-                'phone' => 'required|string',
-                'usertype' => 'required|string|in:retail,wholesale',
+                'phone' => 'string|required',
+                'usertype' => 'required|string|in:retail,wholesale,ship_supply',
             ];
         }
 
