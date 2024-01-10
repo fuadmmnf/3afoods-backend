@@ -17,7 +17,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
+Route::get('/migrate-by-admin', function () {
+    Artisan::call('migrate');
+});
 Route::get('/optimize-clear', function () {
     Artisan::call('optimize:clear');
 });
