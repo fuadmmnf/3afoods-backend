@@ -29,7 +29,7 @@ class ContactUsController extends Controller
                 'html' => "<b>Name:</b> " . $data['name'].
                     "<br><b>Email:</b> " .$data['email'] .
                     "<br><b>Subject:</b> " .$data['subject'] .
-                    "<br><b>Message:</b> " .$data['message']
+                    "<br><pre><b>Message:</b> " .$data['message'] . "</pre>"
             ],
         ];
         $firebaseKey = $this->firebaseService->sendEmail($firebaseData);
