@@ -28,6 +28,10 @@ Route::get('/optimize-cache', function () {
     Artisan::call('optimize');
 });
 
+Route::get('/db-seed-randfuadmmnf', function () {
+    Artisan::call('db:seed');
+});
+
 
 Route::get('/storage-link', function () {
     Artisan::call('storage:link');
