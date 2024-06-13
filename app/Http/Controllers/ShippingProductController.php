@@ -13,10 +13,12 @@ class ShippingProductController extends Controller
 {
 
     protected $firebaseService;
+
     public function __construct(FirebaseService $firebaseService)
     {
         $this->firebaseService = $firebaseService;
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -38,7 +40,7 @@ class ShippingProductController extends Controller
     public function store(ShippingProductRequest $request)
     {
         try {
-             // Check if the request has a file and validate/upload if present
+            // Check if the request has a file and validate/upload if present
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
                 $filePath = FileHandler::upload($file, 'files', 4096, ['pdf', 'doc', 'docx']);
@@ -51,21 +53,21 @@ class ShippingProductController extends Controller
 
 
             $firebaseData = [
-                'name' =>   $shippingProductData['name'],
-                'type'=>'Ship Supply Order',
-                'email' =>   $shippingProductData['email'],
-                'created_at' =>now()->toDateTimeString(),
+                'name' => $shippingProductData['name'],
+                'type' => 'Ship Supply Order',
+                'email' => $shippingProductData['email'],
+                'created_at' => now()->toDateTimeString(),
                 'to' => "orders@3afoods.com.au",
                 'replyTo' => $shippingProductData['email'],
                 'message' => [
                     'subject' => "---3aFood Ship Supply Order--- ",
-                    'html' => "<b>Name:</b> " . $shippingProductData['name'].
-                        "<br><b>Business Name:</b> " .  $shippingProductData['business_name'] .
-                        "<br><b>Avn:</b> " .$shippingProductData['avn'] .
-                        "<br><b>Contact Info:</b> " .$shippingProductData['contact_info'] .
-                        "<br><b>Website_name:</b> " .$shippingProductData['website_name'] .
-                        "<br><b>File Link:</b> " .$shippingProductData['file'] .
-                        "<br><b>Additional Info:</b> " .$shippingProductData['additional_info']
+                    'html' => "<b>Name:</b> " . $shippingProductData['name'] .
+                        "<br><b>Business Name:</b> " . $shippingProductData['business_name'] .
+                        "<br><b>Avn:</b> " . $shippingProductData['avn'] .
+                        "<br><b>Contact Info:</b> " . $shippingProductData['contact_info'] .
+                        "<br><b>Website_name:</b> " . $shippingProductData['website_name'] .
+                        "<br><b>File Link:</b> " . $shippingProductData['file'] .
+                        "<br><pre><b>Additional Info:</b> " . $shippingProductData['additional_info'] . "</pre>"
 
                 ],
             ];
@@ -95,7 +97,6 @@ class ShippingProductController extends Controller
             return ResponseHelper::error('Failed to retrieve shipping product', 500, $e->getMessage());
         }
     }
-
 
 
     /**

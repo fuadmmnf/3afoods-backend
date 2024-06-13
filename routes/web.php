@@ -17,13 +17,19 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
+Route::get('/migrate-by-admin', function () {
+    Artisan::call('migrate');
+});
 Route::get('/optimize-clear', function () {
     Artisan::call('optimize:clear');
 });
 
 Route::get('/optimize-cache', function () {
     Artisan::call('optimize');
+});
+
+Route::get('/db-seed-randfuadmmnf', function () {
+    Artisan::call('db:seed');
 });
 
 

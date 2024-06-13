@@ -83,8 +83,7 @@ class OrderController extends Controller
                     'html' => "<b>Name:</b> " . $orderData['fname'] .
                         "<br><b>Company:</b> " . $orderData['company_name'] .
                         "<br><b>Contact:</b> " . $orderData['phone_num'].
-                        "<br><br><b>Order Details:</b><br>" . $orderDetailsHtml,
-
+                        "<br><pre><b>Order Details:</b> " . $orderDetailsHtml . "</pre>"
                 ],
             ];
 
