@@ -56,9 +56,9 @@ Route::prefix('categories')->middleware(['auth:sanctum'])->group(function () {
 //    normal user
 
 //    admin-only routes
+    Route::get('/', [CategoryController::class, 'index']); // Read All Categories
     Route::middleware(['admin'])->group(function (){
         Route::post('/', [CategoryController::class, 'store']); // Add Category
-        Route::get('/', [CategoryController::class, 'index']); // Read All Categories
         Route::get('/{category_id}', [CategoryController::class, 'show']); // Read Single Category
         Route::put('/{category_id}', [CategoryController::class, 'update']); // Update Category
         Route::delete('/{category_id}', [CategoryController::class, 'destroy']); // Delete Category
